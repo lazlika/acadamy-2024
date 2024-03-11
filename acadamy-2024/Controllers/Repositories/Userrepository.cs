@@ -1,54 +1,51 @@
-﻿using acadamy_2024.Controllers.Models;
+﻿using acadamy_2024.Controllers.Data;
+using acadamy_2024.Controllers.Models;
 
 namespace acadamy_2024.Controllers.Repositories
 {
     public class Userrepository
     {
-        private static  List<User> Users = new List<User>() { new User() { Id = 1, Firstname = "John", Lastname = "Lennon" } };
-    public List<User> GetAll() { return Users; }
-
-        public User? GetById(int id)
+        private readonly Applicationdbcontext _context;
+        public Userrepository()
         {
-            foreach  (var user in Users)
-            {
-
-                if (user.Id == id)
-                { return user; }
-            }
-            return
-                null;
+            _context = new Applicationdbcontext();
         }
+        public List<User> Getolder18() => _context.Users.Where(u =>( u.Age >18)).ToList();
+        public List<User> GetAll() => _context.Users.ToList();
+
+        public User? GetById(int id) => _context.Users.FirstOrDefault(user => user.Id == id);
+        
 
         public void Create(User data)
         {
-            Users.Add(data);
+            _context.Users.Add(data);
+            _context.SaveChanges();
         }
         public User? Update(int id, User data)
         {
-            foreach (var user in Users)
+            var user = _context.Users.FirstOrDefault(user => user.Id == id);
+            if (user != null)
             {
-
-                if (user.Id == id)
-                {
-                    user.Firstname = data.Firstname;
-                    user.Lastname = data.Lastname;
-                    return user; }
+                user.Firstname = data.Firstname;
+                user.Lastname = data.Lastname;
+                return user;
+                _context.SaveChanges();
             }
-            return
-                null;
+            return null;
+
         }
         public bool Delete(int id)
         {
-            foreach (var user in Users)
-            {
 
-                if (user.Id == id)
-                {
-                    Users.Remove(user);
-                    return true; }
+            var user = _context.Users.FirstOrDefault(user => user.Id == id);
+            if (user != null)
+            {
+                _context.Users.Remove(user);
+                _context.SaveChanges();
+                return true;
+                
             }
-            return
-                false;
+            return false;
         }
     }
 }

@@ -31,6 +31,14 @@ namespace acadamy_2024.Controllers
             return user== null ? NotFound(): user;
         }
 
+        [HttpGet]
+        [Route("Age")]
+        public IEnumerable<User> Getolderthan18()
+        {
+            return _userrepository.Getolder18();
+           
+        }
+
         // POST api/<UsersController>
         [HttpPost]
         public ActionResult Post([FromBody] User data)

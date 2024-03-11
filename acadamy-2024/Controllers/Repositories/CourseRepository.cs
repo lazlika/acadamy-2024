@@ -1,56 +1,51 @@
-﻿using acadamy_2024.Controllers.Models;
+﻿using acadamy_2024.Controllers.Data;
+using acadamy_2024.Controllers.Models;
 
 namespace acadamy_2024.Controllers.Repositories
 {
     public class Courserepository
     {
-        private static List<Course> Courses = new List<Course>() { new Course() { Id = 1, Name = "Rajz", Description = "marhaság" } };
-        public List<Course> GetAll() { return Courses; }
-
-        public Course? GetById(int id)
+        private readonly Applicationdbcontext _con;
+        public Courserepository()
         {
-            foreach (var course in Courses)
-            {
-
-                if (course.Id == id)
-                { return course; }
-            }
-            return
-                null;
+            _con = new Applicationdbcontext();
         }
+        public List<Course> GetAll() => _con.Courses.ToList();
+        public Course? GetById(int id) => _con.Courses.FirstOrDefault(course => course.Id == id);
+       
 
         public void Create(Course data)
         {
-            Courses.Add(data);
+            _con.Courses.Add(data);
+            _con.SaveChanges();
         }
         public Course? Update(int id, Course data)
         {
-            foreach (var course in Courses)
-            {
+            var course = _con.Courses.FirstOrDefault(course => course.Id == id);
 
-                if (course.Id == id)
+                if (course !=null)
                 {
                     course.Name = data.Name;
                     course.Description = data.Description;
                     return course;
+                _con.SaveChanges();
                 }
-            }
-            return
-                null;
+            return null;
         }
+
+    
         public bool Delete(int id)
         {
-            foreach (var course in Courses)
-            {
+            var course = _con.Courses.FirstOrDefault(course => course.Id == id);
 
-                if (course.Id == id)
-                {
-                    Courses.Remove(course);
-                    return true;
-                }
+            if (course != null)
+            {
+                _con.Courses.Remove(course);
+                _con.SaveChanges();
+                return false;
+                
             }
-            return
-                false;
+            return false;
         }
     }
 }
